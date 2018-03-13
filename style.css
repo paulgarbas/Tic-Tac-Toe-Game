@@ -1,0 +1,148 @@
+/* General */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    background-color: rgb(184, 184, 184);
+    display: flex;
+    justify-content: center;
+}
+
+/* Frame */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    background-color: rgb(255,255,255);
+    padding: 3rem 10rem;
+}
+
+.choose-player {
+    background-color: rgb(0,128,0);
+    color: rgb(255,255,255);
+    text-align: center;
+    padding: 1rem 0;
+    border: 0.2rem solid rgb(0,0,0);
+    font-size: 2rem;
+}
+
+.buttons {
+    background-color: rgb(0,0,0);
+    margin: 2% 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 2%;
+    grid-row-gap: 2%;
+    padding: 2%;
+}
+
+.x, .o {
+    border: 1px solid rgb(255,255,255);
+    background-color: rgb(163, 56, 56);
+    color: rgb(255,255,255);
+    padding: 1rem 3rem;
+    font-size: 2rem;
+    text-shadow: rgb(0,0,0) 2px 2px;
+}
+
+.x:hover, .o:hover {
+    cursor: pointer;
+    border: 1px solid rgb(163, 56, 56);
+    text-shadow: none;
+}
+
+.x:focus, .o:focus {
+    outline: none;
+}
+
+.frame {
+    width: 35rem;
+    height: 35rem;
+    background-color: rgb(0,0,0);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-column-gap: 2%;
+    grid-row-gap: 2%;
+    padding: 2%;
+}
+
+.frame div {
+    background-color: rgb(163, 56, 56);
+    color: rgb(255,255,255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 9rem;
+}
+
+/* Media quries */
+@media only screen and (max-width : 990px) {
+    body {
+        background-color: rgb(255,255,255);
+    }
+    
+    .container {
+        padding: 0;
+    }    
+}
+
+@media only screen and (max-width : 768px) {
+    .frame {
+        width: 30rem;
+        height: 30rem;  
+    }
+
+    .frame div {
+        font-size: 8rem;
+    }
+}
+
+@media only screen and (max-width : 600px) {
+    .frame {
+        width: 25rem;
+        height: 25rem;  
+    }
+
+    .frame div {
+        font-size: 6rem;
+    }
+}
+
+@media only screen and (max-width : 480px) {
+    .frame {
+        width: 19rem;
+        height: 24rem;  
+    }
+
+    .frame div {
+        font-size: 6rem;
+    }
+}
+
+@media only screen and (max-width : 360px) {
+    .frame {
+        width: 15rem;
+        height: 19rem;  
+    }
+
+    .frame div {
+        font-size: 5rem;
+    }
+
+    .x, .o {
+        font-size: 1.5rem;
+    }
+}
+
+
+
