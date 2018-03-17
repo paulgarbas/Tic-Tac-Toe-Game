@@ -46,11 +46,11 @@ let game = {
         //Nustatau koks simbolis atsispausdins, spaudžiant ant kvadratėlių
         this.dom(".frame").addEventListener("click", (event) => {
             //Jeigu žaidėjo eilė, tada spaudžiasi "X"
-            if (game.dom(".whose-turn__player")) {
+            if (this.dom(".whose-turn__player")) {
                 console.log("turetu buti x'ai");
                 event.target.innerText = "X";
             //Jeigu kompiuterio eilė, tada spaudžiasi "0"
-            } else if (game.dom(".whose-turn__computer")) {
+            } else if (this.dom(".whose-turn__computer")) {
                 console.log("turetu buti 0'iai");
                 event.target.innerText = "0";
             }
