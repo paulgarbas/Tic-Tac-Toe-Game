@@ -8,6 +8,7 @@ html {
 }
 
 body {
+    font-family: 'Roboto', sans-serif;
     height: 100%;
     margin: 0;
     background-color: rgb(184, 184, 184);
@@ -43,6 +44,37 @@ body {
     grid-column-gap: 2%;
     grid-row-gap: 2%;
     padding: 2%;
+}
+
+.whose-turn {
+    background-color: rgb(0,0,0);
+    margin: 2% 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    grid-row-gap: 2%;
+    padding: 2%;
+    display: none;
+}
+
+.whose-turn__player {
+    border: 1px solid rgb(255,255,255);
+    background-color: rgb(0,128,0);
+    color: rgb(255,255,255);
+    padding: 1rem 3rem;
+    font-size: 2rem;
+    text-shadow: rgb(0,0,0) 2px 2px;
+    text-align: center;
+}
+
+.whose-turn__computer {
+    border: 1px solid rgb(255,255,255);
+    background-color: rgb(0, 149, 240);
+    color: rgb(255,255,255);
+    padding: 1rem 3rem;
+    font-size: 2rem;
+    text-shadow: rgb(0,0,0) 2px 2px;
+    text-align: center;
 }
 
 .x, .o {
@@ -82,7 +114,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 9rem;
+    font-size: 8.9rem;
 }
 
 /* Media quries */
@@ -103,7 +135,7 @@ body {
     }
 
     .frame div {
-        font-size: 8rem;
+        font-size: 7rem;
     }
 }
 
@@ -136,7 +168,7 @@ body {
     }
 
     .frame div {
-        font-size: 5rem;
+        font-size: 4rem;
     }
 
     .x, .o {
