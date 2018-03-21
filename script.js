@@ -1,5 +1,8 @@
 "use strict";
 
+let playerTurn;
+let playerSymbol;
+
 let game = {
     
     //Funkcija, su kuria surandame norimus elementus
@@ -23,8 +26,8 @@ let game = {
     //Po "X" ar "0" pasirinkimo, žaidimo pavadinimas išsivalo ir prasideda žaidimas
     start: function() {
         this.dom(".buttons").addEventListener("click", () => {
-            for (let i = 0; i < this.dom(".frame").childNodes.length; i++) {
-                this.dom(".frame").childNodes[i].innerText = "";
+            for (let i = 0; i < this.dom(".frame").children.length; i++) {
+                this.dom(".frame").children[i].innerText = "";
             }
             //Dingsta pasirinkimų mygtukai ir atsiranda užrašas kieno eilė žaisti
             this.dom(".choose-player").style.display = "none";
@@ -34,37 +37,69 @@ let game = {
             //Žaidėjo eilė
             if (event.target.getAttributeNode("class").value === "x") {
                 console.log("paspaustas x");
-                this.dom(".whose-turn__player").innerText = "Your turn!";
-                this.dom(".whose-turn__player").className = "whose-turn__player";
+                playerTurn = true;
+                playerSymbol = "x";
+                //Žaidėjo stilius ir jo eilės užrašas
+                this.whoseTurn();
             //Kompiuterio eilė
             } else if (event.target.getAttributeNode("class").value === "o") {
                 console.log("paspaustas 0");
-                this.dom(".whose-turn__computer").innerText = "Computer's turn!";
-                this.dom(".whose-turn__computer").className = "whose-turn__computer";
+                playerTurn = false;
+                playerSymbol = "0";
+                //Kompiuterio stilius ir jo eilės užrašas
+                this.whoseTurn();
+                
+                //Po 1 sekundės uždelsimo
+                setTimeout(() => { 
+                    //Kompiuteris atsitiktinai renkasi kur įrašyti savo pirmą "0", nes jis pradeda ir visi kvadratai dar tušti
+                    let squares = [];
+                    for (let i = 0; i < this.dom(".frame").children.length; i++) {
+                        squares.push(this.dom(".frame").children[i]);
+                    }
+                    let randomNumber = parseInt(Math.random() * 9);
+                    squares[randomNumber].innerText = "0";
+                }, 1000);
+                //Dabar turi būti žmogaus eilė
+                setTimeout(this.whoseTurn, 1500);
             }
         });
-        //Nustatau koks simbolis atsispausdins, spaudžiant ant kvadratėlių
-        this.dom(".frame").addEventListener("click", (event) => {
-            //Jeigu žaidėjo eilė, tada spaudžiasi "X"
-            if (this.dom(".whose-turn__player")) {
-                console.log("turetu buti x'ai");
-                event.target.innerText = "X";
-            //Jeigu kompiuterio eilė, tada spaudžiasi "0"
-            } else if (this.dom(".whose-turn__computer")) {
-                console.log("turetu buti 0'iai");
-                event.target.innerText = "0";
-            }
-        });    
     },
     
     //
-    // mainGame: function() {
-    
-    // }
+    whoseTurn: function() {
+        if (playerTurn) {
+            game.dom(".whose-turn__who").innerText = "Your turn!";
+            game.dom(".whose-turn__who").style.backgroundColor = "rgb(0,128,0)";
+            //Žaidėjas gali rinktis kur spausti savo ženklą
+            game.dom(".frame").addEventListener("click", (event) => {
+                //Žaidėjas gali spausti tik ant tuščio langelio
+                if (event.target.innerText === "") {
+                    //Paspaudimas veikia tik ant ".frame" vaiko elemento
+                    if (event.target !== event.currentTarget) {
+                        console.log("žaidėjas paspaudė");
+                        event.target.innerText = "X";
+                    }
+                    event.stopPropagation();
+                }
+            });
+            playerTurn = false;
+        } else if (!playerTurn) {
+            game.dom(".whose-turn__who").innerText = "Computer's turn!";
+            game.dom(".whose-turn__who").style.backgroundColor = "rgb(0, 149, 240)";
+            playerTurn = true;
+        }
+    }
 };
 
 game.init();
 game.start();
+game.whoseTurn();
+
+
+
+
+
+
 
 
 

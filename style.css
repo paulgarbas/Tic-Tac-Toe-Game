@@ -57,7 +57,18 @@ body {
     display: none;
 }
 
-.whose-turn__player {
+.whose-turn__who {
+    border: 1px solid rgb(255,255,255);
+    /* background-color: rgb(0,128,0); */
+    color: rgb(255,255,255);
+    padding: 1rem 3rem;
+    font-size: 2rem;
+    text-shadow: rgb(0,0,0) 2px 2px;
+    text-align: center;
+    /* display: none; */
+}
+
+/* .whose-turn__player {
     border: 1px solid rgb(255,255,255);
     background-color: rgb(0,128,0);
     color: rgb(255,255,255);
@@ -65,6 +76,7 @@ body {
     font-size: 2rem;
     text-shadow: rgb(0,0,0) 2px 2px;
     text-align: center;
+    display: none;
 }
 
 .whose-turn__computer {
@@ -75,7 +87,8 @@ body {
     font-size: 2rem;
     text-shadow: rgb(0,0,0) 2px 2px;
     text-align: center;
-}
+    display: none;
+}  */
 
 .x, .o {
     border: 1px solid rgb(255,255,255);
