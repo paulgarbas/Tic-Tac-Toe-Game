@@ -4,6 +4,8 @@ let playerTurn;
 let playerSymbol;
 let computerSymbol;
 let disabled;
+let endOfGame;
+let cornerSquareFilled;
 
 let game = {
     
@@ -14,138 +16,393 @@ let game = {
 
     //Pradinį vaizdą paledžianti funkcija
     init: function() {
-        this.dom(".square1").innerText = "T";
-        this.dom(".square2").innerText = "I";
-        this.dom(".square3").innerText = "C";
-        this.dom(".square4").innerText = "T";
-        this.dom(".square5").innerText = "A";
-        this.dom(".square6").innerText = "C";
-        this.dom(".square7").innerText = "T";
-        this.dom(".square8").innerText = "O";
-        this.dom(".square9").innerText = "E";
+        endOfGame = false;
+        cornerSquareFilled = false;
+        game.dom(".whose-turn").style.display = "none";
+        game.dom(".whose-turn__who").classList.remove("player");
+        game.dom(".whose-turn__who").classList.remove("computer");
+        game.dom(".whose-turn__who").classList.remove("lost");
+        game.dom(".whose-turn__who").classList.remove("won");
+        game.dom(".whose-turn__who").classList.remove("draw");
+        for (let i = 0; i < game.dom(".frame").children.length; i++) {
+            game.dom(".frame").children[i].classList.remove("end-result");
+        };
+        game.dom(".choose-player").style.display = "block";
+        game.dom(".choose-player").innerHTML = "Choose X or 0?";
+        game.dom(".buttons").style.display = "grid";
+        game.dom(".square1").innerHTML = "T";
+        game.dom(".square2").innerHTML = "I";
+        game.dom(".square3").innerHTML = "C";
+        game.dom(".square4").innerHTML = "T";
+        game.dom(".square5").innerHTML = "A";
+        game.dom(".square6").innerHTML = "C";
+        game.dom(".square7").innerHTML = "T";
+        game.dom(".square8").innerHTML = "O";
+        game.dom(".square9").innerHTML = "E";
     },
     
     //Po "X" ar "0" pasirinkimo, žaidimo pavadinimas išsivalo ir prasideda žaidimas
     start: function() {
-        this.dom(".buttons").addEventListener("click", () => {
-            for (let i = 0; i < this.dom(".frame").children.length; i++) {
-                this.dom(".frame").children[i].innerText = "";
+        game.dom(".buttons").addEventListener("click", () => {
+            for (let i = 0; i < game.dom(".frame").children.length; i++) {
+                game.dom(".frame").children[i].innerHTML = "";
             }
             //Dingsta pasirinkimų mygtukai ir atsiranda užrašas kieno eilė žaisti
-            this.dom(".choose-player").style.display = "none";
-            this.dom(".buttons").style.display = "none";
-            this.dom(".whose-turn").style.display = "block";
-
+            game.dom(".choose-player").style.display = "none";
+            game.dom(".buttons").style.display = "none";
+            game.dom(".whose-turn").style.display = "block";
+            
             //Žaidėjas pasirinko būti "X"
             if (event.target.getAttributeNode("class").value === "x") {
-                console.log("Žaidėjas pasirinko būti X");
                 playerSymbol = "X";
                 computerSymbol = "0";
-                //Žaidėjo stilius ir jo eilės užrašas
-                this.whoStarts();
             //Žaidėjas pasirinko būti "0"
             } else if (event.target.getAttributeNode("class").value === "o") {
-                console.log("Žaidėjas pasirinko būti 0");
                 playerSymbol = "0";
                 computerSymbol = "X";
-                //Kompiuterio stilius ir jo eilės užrašas
-                this.whoStarts();
             }
+            
+            //Parenkama kas pradės žaidimą
+            game.whoStarts();
         });
     },
 
     //Atsitiktiniu būdu parenkama kas pradeda žaidimą 
     whoStarts: function() {
+        let randomNumber, whoStarts;
         let players = ["player", "computer"];
-        let randomNumber = parseInt(Math.random() * 2);
-        let whoStarts = players[randomNumber];
+        randomNumber = parseInt(Math.random() * 2);
+        whoStarts = players[randomNumber];
         //Jeigu pradeda žmogus
         if (whoStarts === "player") {
             playerTurn = true;
-            this.whoseTurn(); //pritaikomas žmogaus stilius ir užrašas
+            game.whoseTurn(); //pritaikomas žmogaus stilius ir užrašas
         //Jeigu pradeda kompiuteris
         } else {
             playerTurn = false;
-            //Po 1 sekundės uždelsimo
-            setTimeout(() => { 
-                //Kompiuteris atsitiktinai renkasi kur įrašyti savo pirmą simbolį, nes jis pradeda ir visi kvadratai dar tušti
-                let squares = [];
-                for (let i = 0; i < this.dom(".frame").children.length; i++) {
-                    squares.push(this.dom(".frame").children[i]);
-                }
-                let randomNumber = parseInt(Math.random() * 9);
-                squares[randomNumber].innerText = computerSymbol;
-                playerTurn = true;
-            }, 1000);
-            //Dabar žmogaus eilė
-            setTimeout(this.whoseTurn, 1500); //po 1,5 sekundės uždelsimo pritaikomas žmogaus stilius ir užrašas
+            game.whoseTurn(); //pritaikomas kompiuterio stilius ir užrašas
         }
     },
     
     //Parašo kieno eilė ir pagal tai pakeičia stilių 
     whoseTurn: function() {
-        //Žmogaus stilius ir jo paspaudimo nustatymai
-        if (playerTurn) {
-            game.dom(".whose-turn__who").innerText = "Your turn!";
-            game.dom(".whose-turn__who").style.backgroundColor = "rgb(0,128,0)";
-            //Žmogus gali rinktis kur spausti savo ženklą
-                game.dom(".frame").addEventListener("click", (event) => {
-                    //Žmogus gali paspausti tik vieną kartą, paskui renkasi kompiuteris
-                    if (!disabled) {
-                        //Žmogus gali spausti tik ant tuščio langelio
-                        if (event.target.innerText === "") {
-                            //Paspaudimas veikia tik ant ".frame" vaiko elemento
-                            if (event.target !== event.currentTarget) {
-                                console.log("žaidėjas paspaudė");
-                                event.target.innerText = playerSymbol;
-                                disabled = true;
-                            }
-                            event.stopPropagation();
-                            playerTurn = false;
-                            game.computerPlays(); //Kompiuterio eilė
-                        } 
-                    }
-                });
-        //Kompiuterio stilius
-        } else {
-            game.dom(".whose-turn__who").innerText = "Computer's turn!";
-            game.dom(".whose-turn__who").style.backgroundColor = "rgb(0, 149, 240)";
-            playerTurn = true;
+        //Tikrina ar nėra laimėtojo
+        game.youWon();
+        //Tikrina ar nėra lygiųjų
+        game.draw();
+        //Jei ne žaidimo pabaiga
+        if (!endOfGame) {
+            //Žmogaus stilius ir jo paspaudimo nustatymai
+            if (playerTurn) {
+                game.dom(".whose-turn__who").innerHTML = "Your turn!";
+                game.dom(".whose-turn__who").classList.remove("computer");
+                game.dom(".whose-turn__who").classList.add("player");
+                disabled = false; //Kad negalėtų paspausti antrą kartą per savo eilę
+                game.playerPlays(); //Žaidėjas eilė žaisti
+            //Kompiuterio stilius
+            } else {
+                game.dom(".whose-turn__who").innerHTML = "Computer's turn!";
+                game.dom(".whose-turn__who").classList.remove("player");
+                game.dom(".whose-turn__who").classList.add("computer");
+                disabled = true;
+                setTimeout(game.computerPlays, 500); //Kompiuterio eilė žaisti
+            }
         }
+    },
+
+    //Žaidžia žaidėjas
+    playerPlays: function() {
+        //Žmogus gali rinktis kur spausti savo ženklą
+        game.dom(".frame").addEventListener("click", (event) => {
+            //Žmogus gali paspausti tik vieną kartą, paskui renkasi kompiuteris
+            if (!disabled && !endOfGame) {
+                //Žmogus gali spausti tik ant tuščio langelio
+                if (event.target.innerHTML === "") {
+                    //Paspaudimas veikia tik ant ".frame" vaiko elemento
+                    if (event.target !== event.currentTarget) {
+                        event.target.innerHTML = playerSymbol;
+                        disabled = true;
+                        playerTurn = false;  
+                    }
+                    event.stopPropagation();
+                    setTimeout(game.whoseTurn, 500); //Kompiuterio eilė žaisti
+                } 
+            }
+        });
     },
 
     //Žaidžia kompiuteris
     computerPlays: function() {
-        setTimeout(this.whoseTurn, 1000); //Po 1 sekundės atsiranda kompiuterio stilius
-        setTimeout(() => { 
-            //Po 1,5 sekundės kompiuteris atsitiktinai renkasi ir įrašo į kažkurį tuščią langelį savo simbolį
-            let squares = [];
-            for (let i = 0; i < this.dom(".frame").children.length; i++) {
-                if (this.dom(".frame").children[i].innerText === "") {
-                    squares.push(this.dom(".frame").children[i]);
-                }
+        //Jeigu vidurinis langelis yra tuščias - kompiuteris įrašo į jį savo ženklą
+        if (game.dom(".square5").innerHTML === "") {
+            game.dom(".square5").innerHTML = computerSymbol;
+        //Jeigu žmogus įrašo savo simbolį į vidurinį langelį, kompiuteris įrašo savo simbolį į vieną iš keturių kampinių langelių (taip daro tik vieną kartą)
+        } else if (!cornerSquareFilled && game.dom(".square5").innerHTML === playerSymbol) {
+            let fourSquares = [game.dom(".square1"), game.dom(".square3"), game.dom(".square7"), game.dom(".square9")];
+            let randomNumber = parseInt(Math.random() * 4);
+            while (fourSquares[randomNumber].innerHTML !== "") {
+                randomNumber = parseInt(Math.random() * 4);
             }
-            if (squares.length !== 0) {
-                let randomNumber = parseInt(Math.random() * squares.length);
-                squares[randomNumber].innerText = computerSymbol;
+            fourSquares[randomNumber].innerHTML = computerSymbol;
+            cornerSquareFilled = true; //Į kampinį langelį leidžia įrašyti tik 1 kartą
+        } else {
+            //Deda savo ženklą ten, kur yra 2 kompiuterio ženklai vienas šalia kito (tikslas - laimėti)
+            if (game.dom(".square1").innerHTML === computerSymbol && game.dom(".square2").innerHTML === computerSymbol && game.dom(".square3").innerHTML === "") {
+                game.dom(".square3").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square1"), game.dom(".square2"), game.dom(".square3"));
+            } else if (game.dom(".square1").innerHTML === computerSymbol && game.dom(".square3").innerHTML === computerSymbol  && game.dom(".square2").innerHTML === "") {
+                game.dom(".square2").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square1"), game.dom(".square3"), game.dom(".square2"));
+            } else if (game.dom(".square2").innerHTML === computerSymbol && game.dom(".square3").innerHTML === computerSymbol  && game.dom(".square1").innerHTML === "") {
+                game.dom(".square1").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square2"), game.dom(".square3"), game.dom(".square1"));
+            } else if (game.dom(".square4").innerHTML === computerSymbol && game.dom(".square5").innerHTML === computerSymbol  && game.dom(".square6").innerHTML === "") {
+                game.dom(".square6").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square4"), game.dom(".square5"), game.dom(".square6"));
+            } else if (game.dom(".square4").innerHTML === computerSymbol && game.dom(".square6").innerHTML === computerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square4"), game.dom(".square6"), game.dom(".square5"));
+            } else if (game.dom(".square5").innerHTML === computerSymbol && game.dom(".square6").innerHTML === computerSymbol  && game.dom(".square4").innerHTML === "") {
+                game.dom(".square4").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square5"), game.dom(".square6"), game.dom(".square4"));
+            } else if (game.dom(".square7").innerHTML === computerSymbol && game.dom(".square8").innerHTML === computerSymbol  && game.dom(".square9").innerHTML === "") {
+                game.dom(".square9").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square7"), game.dom(".square8"), game.dom(".square9"));
+            } else if (game.dom(".square7").innerHTML === computerSymbol && game.dom(".square9").innerHTML === computerSymbol  && game.dom(".square8").innerHTML === "") {
+                game.dom(".square8").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square7"), game.dom(".square9"), game.dom(".square8"));
+            } else if (game.dom(".square8").innerHTML === computerSymbol && game.dom(".square9").innerHTML === computerSymbol  && game.dom(".square7").innerHTML === "") {
+                game.dom(".square7").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square8"), game.dom(".square9"), game.dom(".square7"));
+            } else if (game.dom(".square1").innerHTML === computerSymbol && game.dom(".square4").innerHTML === computerSymbol  && game.dom(".square7").innerHTML === "") {
+                game.dom(".square7").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square1"), game.dom(".square4"), game.dom(".square7"));
+            } else if (game.dom(".square1").innerHTML === computerSymbol && game.dom(".square7").innerHTML === computerSymbol  && game.dom(".square4").innerHTML === "") {
+                game.dom(".square4").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square1"), game.dom(".square7"), game.dom(".square4"));
+            } else if (game.dom(".square4").innerHTML === computerSymbol && game.dom(".square7").innerHTML === computerSymbol  && game.dom(".square1").innerHTML === "") {
+                game.dom(".square1").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square4"), game.dom(".square7"), game.dom(".square1"));
+            } else if (game.dom(".square2").innerHTML === computerSymbol && game.dom(".square5").innerHTML === computerSymbol  && game.dom(".square8").innerHTML === "") {
+                game.dom(".square8").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square2"), game.dom(".square5"), game.dom(".square8"));
+            } else if (game.dom(".square2").innerHTML === computerSymbol && game.dom(".square8").innerHTML === computerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square2"), game.dom(".square8"), game.dom(".square5"));
+            } else if (game.dom(".square5").innerHTML === computerSymbol && game.dom(".square8").innerHTML === computerSymbol  && game.dom(".square2").innerHTML === "") {
+                game.dom(".square2").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square5"), game.dom(".square8"), game.dom(".square2"));
+            } else if (game.dom(".square3").innerHTML === computerSymbol && game.dom(".square6").innerHTML === computerSymbol  && game.dom(".square9").innerHTML === "") {
+                game.dom(".square9").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square3"), game.dom(".square6"), game.dom(".square9"));
+            } else if (game.dom(".square3").innerHTML === computerSymbol && game.dom(".square9").innerHTML === computerSymbol  && game.dom(".square6").innerHTML === "") {
+                game.dom(".square6").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square3"), game.dom(".square9"), game.dom(".square6"));
+            } else if (game.dom(".square6").innerHTML === computerSymbol && game.dom(".square9").innerHTML === computerSymbol  && game.dom(".square3").innerHTML === "") {
+                game.dom(".square3").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square6"), game.dom(".square9"), game.dom(".square3"));
+            } else if (game.dom(".square1").innerHTML === computerSymbol && game.dom(".square5").innerHTML === computerSymbol  && game.dom(".square9").innerHTML === "") {
+                game.dom(".square9").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square1"), game.dom(".square5"), game.dom(".square9"));
+            } else if (game.dom(".square1").innerHTML === computerSymbol && game.dom(".square9").innerHTML === computerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square1"), game.dom(".square9"), game.dom(".square5"));
+            } else if (game.dom(".square5").innerHTML === computerSymbol && game.dom(".square9").innerHTML === computerSymbol  && game.dom(".square1").innerHTML === "") {
+                game.dom(".square1").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square5"), game.dom(".square9"), game.dom(".square1"));
+            } else if (game.dom(".square3").innerHTML === computerSymbol && game.dom(".square5").innerHTML === computerSymbol  && game.dom(".square7").innerHTML === "") {
+                game.dom(".square7").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square3"), game.dom(".square5"), game.dom(".square7"));
+            } else if (game.dom(".square3").innerHTML === computerSymbol && game.dom(".square7").innerHTML === computerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square3"), game.dom(".square7"), game.dom(".square5"));
+            } else if (game.dom(".square5").innerHTML === computerSymbol && game.dom(".square7").innerHTML === computerSymbol  && game.dom(".square3").innerHTML === "") {
+                game.dom(".square3").innerHTML = computerSymbol;
+                game.youLost(game.dom(".square5"), game.dom(".square7"), game.dom(".square3"));
+            }
+            //Deda savo ženklą ten, kur yra 2 žaidėjo ženklai vienas šalia kito (tikslas - apsiginti)
+            else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square2").innerHTML === playerSymbol && game.dom(".square3").innerHTML === "") {
+                game.dom(".square3").innerHTML = computerSymbol;
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square3").innerHTML === playerSymbol  && game.dom(".square2").innerHTML === "") {
+                game.dom(".square2").innerHTML = computerSymbol;
+            } else if (game.dom(".square2").innerHTML === playerSymbol && game.dom(".square3").innerHTML === playerSymbol  && game.dom(".square1").innerHTML === "") {
+                game.dom(".square1").innerHTML = computerSymbol;
+            } else if (game.dom(".square4").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol  && game.dom(".square6").innerHTML === "") {
+                game.dom(".square6").innerHTML = computerSymbol;
+            } else if (game.dom(".square4").innerHTML === playerSymbol && game.dom(".square6").innerHTML === playerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+            } else if (game.dom(".square5").innerHTML === playerSymbol && game.dom(".square6").innerHTML === playerSymbol  && game.dom(".square4").innerHTML === "") {
+                game.dom(".square4").innerHTML = computerSymbol;
+            } else if (game.dom(".square7").innerHTML === playerSymbol && game.dom(".square8").innerHTML === playerSymbol  && game.dom(".square9").innerHTML === "") {
+                game.dom(".square9").innerHTML = computerSymbol;
+            } else if (game.dom(".square7").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol  && game.dom(".square8").innerHTML === "") {
+                game.dom(".square8").innerHTML = computerSymbol;
+            } else if (game.dom(".square8").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol  && game.dom(".square7").innerHTML === "") {
+                game.dom(".square7").innerHTML = computerSymbol;
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square4").innerHTML === playerSymbol  && game.dom(".square7").innerHTML === "") {
+                game.dom(".square7").innerHTML = computerSymbol;
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square7").innerHTML === playerSymbol  && game.dom(".square4").innerHTML === "") {
+                game.dom(".square4").innerHTML = computerSymbol;
+            } else if (game.dom(".square4").innerHTML === playerSymbol && game.dom(".square7").innerHTML === playerSymbol  && game.dom(".square1").innerHTML === "") {
+                game.dom(".square1").innerHTML = computerSymbol;
+            } else if (game.dom(".square2").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol  && game.dom(".square8").innerHTML === "") {
+                game.dom(".square8").innerHTML = computerSymbol;
+            } else if (game.dom(".square2").innerHTML === playerSymbol && game.dom(".square8").innerHTML === playerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+            } else if (game.dom(".square5").innerHTML === playerSymbol && game.dom(".square8").innerHTML === playerSymbol  && game.dom(".square2").innerHTML === "") {
+                game.dom(".square2").innerHTML = computerSymbol;
+            } else if (game.dom(".square3").innerHTML === playerSymbol && game.dom(".square6").innerHTML === playerSymbol  && game.dom(".square9").innerHTML === "") {
+                game.dom(".square9").innerHTML = computerSymbol;
+            } else if (game.dom(".square3").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol  && game.dom(".square6").innerHTML === "") {
+                game.dom(".square6").innerHTML = computerSymbol;
+            } else if (game.dom(".square6").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol  && game.dom(".square3").innerHTML === "") {
+                game.dom(".square3").innerHTML = computerSymbol;
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol  && game.dom(".square9").innerHTML === "") {
+                game.dom(".square9").innerHTML = computerSymbol;
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+            } else if (game.dom(".square5").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol  && game.dom(".square1").innerHTML === "") {
+                game.dom(".square1").innerHTML = computerSymbol;
+            } else if (game.dom(".square3").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol  && game.dom(".square7").innerHTML === "") {
+                game.dom(".square7").innerHTML = computerSymbol;
+            } else if (game.dom(".square3").innerHTML === playerSymbol && game.dom(".square7").innerHTML === playerSymbol  && game.dom(".square5").innerHTML === "") {
+                game.dom(".square5").innerHTML = computerSymbol;
+            } else if (game.dom(".square5").innerHTML === playerSymbol && game.dom(".square7").innerHTML === playerSymbol  && game.dom(".square3").innerHTML === "") {
+                game.dom(".square3").innerHTML = computerSymbol;
             } else {
-                console.log("End of the game!");
+                game.computerRandomPlay(); //Jei aukštesnės sąlygos neatitinka, tada langelį renkasi atsitiktinai
+            }      
+        }
+        disabled = false;
+        playerTurn = true;
+        setTimeout(game.whoseTurn, 500);
+    },
+    
+    //Kompiuteris atsitiktinai renkasi ir įrašo į kažkurį tuščią langelį savo simbolį
+    computerRandomPlay: function() {
+        let squares = [];
+        let randomNumber;
+        for (let i = 0; i < game.dom(".frame").children.length; i++) {
+            if (game.dom(".frame").children[i].innerHTML === "") {
+                squares.push(game.dom(".frame").children[i]);
             }
-            playerTurn = true;
-            disabled = false;
-        }, 1500);
-        //Po 1,5 sekundžių atsiranda žmogaus stilius ir jis gali paspausti ant langelio
-        setTimeout(this.whoseTurn, 1500);
+        }
+        if (squares.length !== 0) {
+            randomNumber = parseInt(Math.random() * squares.length);
+            squares[randomNumber].innerHTML = computerSymbol;
+        } 
+    },
+
+    //Žaidėjas pralošė
+    youLost: function(first, second, third) {
+        endOfGame = true;
+        first.classList.add("end-result");
+        second.classList.add("end-result");
+        third.classList.add("end-result");
+        game.dom(".whose-turn__who").innerHTML = "You lost!";
+        game.dom(".whose-turn__who").classList.add("lost");
+        setTimeout(game.init, 2000);
+    }, 
+
+    //Žaidėjas laimėjo
+    youWon: function() {
+        if (!endOfGame) {
+            if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square2").innerHTML === playerSymbol && game.dom(".square3").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square1").classList.add("end-result");
+                game.dom(".square2").classList.add("end-result");
+                game.dom(".square3").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square4").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol && game.dom(".square6").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square4").classList.add("end-result");
+                game.dom(".square5").classList.add("end-result");
+                game.dom(".square6").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square7").innerHTML === playerSymbol && game.dom(".square8").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square7").classList.add("end-result");
+                game.dom(".square8").classList.add("end-result");
+                game.dom(".square9").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square4").innerHTML === playerSymbol && game.dom(".square7").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square1").classList.add("end-result");
+                game.dom(".square4").classList.add("end-result");
+                game.dom(".square7").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square2").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol && game.dom(".square8").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square2").classList.add("end-result");
+                game.dom(".square5").classList.add("end-result");
+                game.dom(".square8").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square3").innerHTML === playerSymbol && game.dom(".square6").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square3").classList.add("end-result");
+                game.dom(".square6").classList.add("end-result");
+                game.dom(".square9").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol && game.dom(".square9").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square1").classList.add("end-result");
+                game.dom(".square5").classList.add("end-result");
+                game.dom(".square9").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } else if (game.dom(".square3").innerHTML === playerSymbol && game.dom(".square5").innerHTML === playerSymbol && game.dom(".square7").innerHTML === playerSymbol) {
+                endOfGame = true;
+                game.dom(".square3").classList.add("end-result");
+                game.dom(".square5").classList.add("end-result");
+                game.dom(".square7").classList.add("end-result"); 
+                game.dom(".whose-turn__who").innerHTML = "You won!";
+                game.dom(".whose-turn__who").classList.add("won");
+                setTimeout(game.init, 2000);  
+            } 
+        }
+    },
+
+    //Lygiosios
+    draw: function() {
+        if (!endOfGame) {
+            let frameChildren = [];
+            let full = true;
+            for (let i = 0; i < game.dom(".frame").children.length; i++) {
+                frameChildren.push(game.dom(".frame").children[i].innerHTML);
+            }
+            frameChildren.forEach(item => {
+                if (item !== "X" && item !== "0") {
+                    full = false;
+                } 
+            });
+            if (full) {
+                endOfGame = true;
+                game.dom(".whose-turn__who").innerHTML = "Draw!";
+                game.dom(".whose-turn__who").classList.add("draw");
+                for(let i = 0; i < game.dom(".frame").children.length; i++) {
+                    game.dom(".frame").children[i].classList.add("end-result");
+                };
+                setTimeout(game.init, 2000);
+            }
+        }
     }
 };
 
 game.init();
 game.start();
-game.whoseTurn();
-
-
-
-
 
 
 

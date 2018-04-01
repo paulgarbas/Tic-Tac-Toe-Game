@@ -15,6 +15,7 @@ body {
     display: flex;
     justify-content: center;
 }
+/* end of general */
 
 /* Frame */
 .container {
@@ -59,36 +60,12 @@ body {
 
 .whose-turn__who {
     border: 1px solid rgb(255,255,255);
-    /* background-color: rgb(0,128,0); */
     color: rgb(255,255,255);
     padding: 1rem 3rem;
     font-size: 2rem;
     text-shadow: rgb(0,0,0) 2px 2px;
     text-align: center;
-    /* display: none; */
 }
-
-/* .whose-turn__player {
-    border: 1px solid rgb(255,255,255);
-    background-color: rgb(0,128,0);
-    color: rgb(255,255,255);
-    padding: 1rem 3rem;
-    font-size: 2rem;
-    text-shadow: rgb(0,0,0) 2px 2px;
-    text-align: center;
-    display: none;
-}
-
-.whose-turn__computer {
-    border: 1px solid rgb(255,255,255);
-    background-color: rgb(0, 149, 240);
-    color: rgb(255,255,255);
-    padding: 1rem 3rem;
-    font-size: 2rem;
-    text-shadow: rgb(0,0,0) 2px 2px;
-    text-align: center;
-    display: none;
-}  */
 
 .x, .o {
     border: 1px solid rgb(255,255,255);
@@ -121,7 +98,7 @@ body {
     padding: 2%;
 }
 
-.frame div {
+.square {
     background-color: rgb(163, 56, 56);
     color: rgb(255,255,255);
     display: flex;
@@ -130,7 +107,42 @@ body {
     font-size: 8.9rem;
 }
 
-/* Media quries */
+/* Whose turn */
+.player {
+    background-color: rgb(0, 128, 0);
+}
+
+.computer {
+    background-color: rgb(0, 149, 240);
+}
+/* end of whose turn */
+
+/* Game result styles */
+.won {
+    background-color: rgba(255, 255, 255, 0.6);
+    color: rgb(0, 128, 0);
+    font-weight: 700;
+}
+
+.lost {
+    background-color: rgba(255, 255, 255, 0.6);
+    color: rgb(163, 56, 56);
+    font-weight: 700;
+}
+
+.draw {
+    background-color: rgba(255, 255, 255, 0.6);
+    color: rgb(255, 255, 255);
+    font-weight: 700;
+}
+
+.end-result {
+    background-color: rgba(250, 0, 0, 0.9);
+    color: rgb(0, 0, 0);
+}
+/* end of game result styles */
+
+/* Media queries */
 @media only screen and (max-width : 990px) {
     body {
         background-color: rgb(255,255,255);
@@ -188,6 +200,7 @@ body {
         font-size: 1.5rem;
     }
 }
+/* end of media queries */
 
 
 
