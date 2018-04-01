@@ -52,11 +52,11 @@ let game = {
             game.dom(".buttons").style.display = "none";
             game.dom(".whose-turn").style.display = "block";
             
-            //Žaidėjas pasirinko būti "X"
+            //Žmogus pasirinko būti "X"
             if (event.target.getAttributeNode("class").value === "x") {
                 playerSymbol = "X";
                 computerSymbol = "0";
-            //Žaidėjas pasirinko būti "0"
+            //Žmogus pasirinko būti "0"
             } else if (event.target.getAttributeNode("class").value === "o") {
                 playerSymbol = "0";
                 computerSymbol = "X";
@@ -98,7 +98,7 @@ let game = {
                 game.dom(".whose-turn__who").classList.remove("computer");
                 game.dom(".whose-turn__who").classList.add("player");
                 disabled = false; //Kad negalėtų paspausti antrą kartą per savo eilę
-                game.playerPlays(); //Žaidėjas eilė žaisti
+                game.playerPlays(); //Žmogaus eilė žaisti
             //Kompiuterio stilius
             } else {
                 game.dom(".whose-turn__who").innerHTML = "Computer's turn!";
@@ -110,7 +110,7 @@ let game = {
         }
     },
 
-    //Žaidžia žaidėjas
+    //Žaidžia žmogus
     playerPlays: function() {
         //Žmogus gali rinktis kur spausti savo ženklą
         game.dom(".frame").addEventListener("click", (event) => {
@@ -123,9 +123,9 @@ let game = {
                         event.target.innerHTML = playerSymbol;
                         disabled = true;
                         playerTurn = false;  
+                        setTimeout(game.whoseTurn, 500); //Kompiuterio eilė žaisti
                     }
                     event.stopPropagation();
-                    setTimeout(game.whoseTurn, 500); //Kompiuterio eilė žaisti
                 } 
             }
         });
@@ -133,8 +133,14 @@ let game = {
 
     //Žaidžia kompiuteris
     computerPlays: function() {
-        //Jeigu vidurinis langelis yra tuščias - kompiuteris įrašo į jį savo ženklą
-        if (game.dom(".square5").innerHTML === "") {
+        let playerPlayed = false;
+        for (let i = 0; i < game.dom(".frame").children.length; i++) {
+            if (game.dom(".frame").children[i].innerHTML === playerSymbol) {
+                playerPlayed = true;
+            }
+        }
+        //Jeigu žmogus paėjo, o vidurinis langelis yra vis dar tuščias - kompiuteris įrašo į jį savo ženklą
+        if (game.dom(".square5").innerHTML === "" && playerPlayed) {
             game.dom(".square5").innerHTML = computerSymbol;
         //Jeigu žmogus įrašo savo simbolį į vidurinį langelį, kompiuteris įrašo savo simbolį į vieną iš keturių kampinių langelių (taip daro tik vieną kartą)
         } else if (!cornerSquareFilled && game.dom(".square5").innerHTML === playerSymbol) {
@@ -220,7 +226,7 @@ let game = {
                 game.dom(".square3").innerHTML = computerSymbol;
                 game.youLost(game.dom(".square5"), game.dom(".square7"), game.dom(".square3"));
             }
-            //Deda savo ženklą ten, kur yra 2 žaidėjo ženklai vienas šalia kito (tikslas - apsiginti)
+            //Deda savo ženklą ten, kur yra 2 žmogaus ženklai vienas šalia kito (tikslas - apsiginti)
             else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square2").innerHTML === playerSymbol && game.dom(".square3").innerHTML === "") {
                 game.dom(".square3").innerHTML = computerSymbol;
             } else if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square3").innerHTML === playerSymbol  && game.dom(".square2").innerHTML === "") {
@@ -273,7 +279,10 @@ let game = {
                 game.computerRandomPlay(); //Jei aukštesnės sąlygos neatitinka, tada langelį renkasi atsitiktinai
             }      
         }
-        disabled = false;
+        //Žmogaus paspaudimo uždelsimas, kad kompiuteris nedėtų kelių ženklų iš karto
+        setTimeout(() => {
+            disabled = false
+        }, 500);
         playerTurn = true;
         setTimeout(game.whoseTurn, 500);
     },
@@ -293,7 +302,7 @@ let game = {
         } 
     },
 
-    //Žaidėjas pralošė
+    //Žmogus pralošė
     youLost: function(first, second, third) {
         endOfGame = true;
         first.classList.add("end-result");
@@ -304,7 +313,7 @@ let game = {
         setTimeout(game.init, 2000);
     }, 
 
-    //Žaidėjas laimėjo
+    //Žmogus laimėjo
     youWon: function() {
         if (!endOfGame) {
             if (game.dom(".square1").innerHTML === playerSymbol && game.dom(".square2").innerHTML === playerSymbol && game.dom(".square3").innerHTML === playerSymbol) {
